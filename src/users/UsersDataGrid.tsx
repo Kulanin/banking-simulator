@@ -23,7 +23,7 @@ const UsersDataGrid = ({
   fetchAccounts,
   updateUsers
 }: UsersDataGridProps) => {
-  
+
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 50 },
     { field: "name", headerName: "Name", width: 100 },
@@ -32,7 +32,7 @@ const UsersDataGrid = ({
       field: "actions",
       headerName: "Actions",
       width: 200,
-      renderCell: (params) => (
+      renderCell: () => (
         <GenericFormModal
           openFormText="Create Account"
           dialogTitle="Select account type"
@@ -47,7 +47,7 @@ const UsersDataGrid = ({
   ];
 
   return (
-    <Grid  xs={12} md={4}  >
+      <Grid size={{ xs: 12, md: 6 }}>
       <Card>
         <CardHeader
           sx={{

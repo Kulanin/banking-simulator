@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import BankAccountList from "./accounts/BankAccountList";
 import Grid from "@mui/material/Grid";
 import {

@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@mui/material";
 import { useNotification } from "../NotificationProvider";
@@ -14,8 +14,7 @@ function CreateUserForm({ updateUsers }: CreateUserFormProps) {
   const [email, setEmail] = useState("");
   const { showNotification } = useNotification();
   const [error, setError] = useState(false);
-  const { customFetchData: createUserFetch, loading } =
-    useFetch();
+  const { customFetchData: createUserFetch, loading } = useFetch();
 
   const createUser = async (e: any) => {
     e.preventDefault();
@@ -48,6 +47,10 @@ function CreateUserForm({ updateUsers }: CreateUserFormProps) {
           required
           fullWidth
           margin="normal"
+          error={error && !name.trim()}
+          helperText={
+            error && !name.trim() ? "User name is required" : undefined
+          }
         />
 
         <TextField
@@ -58,6 +61,10 @@ function CreateUserForm({ updateUsers }: CreateUserFormProps) {
           required
           fullWidth
           margin="normal"
+          error={error && !email.trim()}
+          helperText={
+            error && !email.trim() ? "User email is required" : undefined
+          }
         />
 
         <DialogActions sx={{ mt: 2 }}>

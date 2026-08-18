@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { GridColDef } from "@mui/x-data-grid";
 import {} from "@mui/material";
 import AppDataGrid from "../AppDataGrid";
@@ -12,9 +12,9 @@ function BankStatementTable({ accountId }: MoneyTranferFormProps) {
   const [statement, setStatement] = useState<any>([]);
   const { showNotification } = useNotification();
 
-  const { customFetchData, loading } = useFetch();
+  const { customFetchData } = useFetch();
 
-  const fetchStatement = useCallback(async (id: string) => {
+  const fetchStatement = useCallback(async () => {
     try {
       const data = await customFetchData(
         `/api/v1/accounts/statement/${accountId}`,
@@ -36,7 +36,7 @@ function BankStatementTable({ accountId }: MoneyTranferFormProps) {
   }, []);
 
   useEffect(() => {
-    fetchStatement(accountId); 
+    fetchStatement(); 
   }, []);
 
   const statementColumns: GridColDef[] = [

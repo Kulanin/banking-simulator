@@ -27,7 +27,7 @@ function OpenAccountForm({
   fetchAccounts,
   selectedUser,
 }: OpenAccountFormProps) {
-  const [open, setOpen] = React.useState(false);
+  const [, setOpen] = React.useState(false);
   const [accountType, setAccountType] = React.useState("");
   const [maturityDate, setMaturityDate] = React.useState<Dayjs | null>(null);
   const [accountName, setAccountName] = useState("");
