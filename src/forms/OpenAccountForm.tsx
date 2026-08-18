@@ -1,0 +1,145 @@
+import React, { useState } from "react";
+
+import { Button, } from "@mui/material";
+
+import {
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  TextField,
+} from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import  { Dayjs } from "dayjs";
+import { useNotification } from "../NotificationProvider";
+import { Backdrop, CircularProgress, Typography } from "@mui/material";
+import useFetch from "../customHooks/useFetch";
+import type { FetchUserAccountsFn, UserProps } from "../types";
+type OpenAccountFormProps = {
+  fetchAccounts: FetchUserAccountsFn;
+  selectedUser: UserProps;
+};
+function OpenAccountForm({
+  fetchAccounts,
+  selectedUser,
+}: OpenAccountFormProps) {
+  const [open, setOpen] = React.useState(false);
+  const [accountType, setAccountType] = React.useState("");
+  const [maturityDate, setMaturityDate] = React.useState<Dayjs | null>(null);
+  const [accountName, setAccountName] = useState("");
+  const { showNotification } = useNotification();
+  const handleClose = () => setOpen(false);
+  const [error, setError] = useState(false);
+
+  const { customFetchData, loading } = useFetch();
+  const handleAccountNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAccountName(e.target.value);
+  };
+
+  const createAccount = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (
+      !accountName.trim() ||
+      !accountType.trim() ||
+      (accountType === "FIXED" && !maturityDate)
+    ) {
+      setError(true);
+      return;
+    }
+
+    try {
+      const data = await customFetchData(
+        `api/v1/accounts/user/${selectedUser.id}`,
+        {
+          method: "POST",
+          querydata: {
+            maturityDate: maturityDate?.format("YYYY-MM-DD"),
+            accountType,
+            accountName,
+          },
+        },
+        true,
+      );
+      fetchAccounts();
+      showNotification(data.message);
+    } catch (error: any) {
+      showNotification(error.message, "error");
+    }
+  };
+
+  return (
+    <>
+      <form onSubmit={createAccount}>
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Account Type</InputLabel>
+          <Select
+            value={accountType}
+            onChange={(e) => {
+              setAccountType(e.target.value);
+            }}
+            label="Account Type"
+          >
+            <MenuItem value="SAVINGS">Savings</MenuItem>
+            <MenuItem value="FIXED">Fixed</MenuItem>
+            <MenuItem value="CHECKING">Checking</MenuItem>
+          </Select>
+          <FormHelperText>Select account type</FormHelperText>
+        </FormControl>
+
+        <TextField
+          value={accountName}
+          onChange={handleAccountNameChange}
+          fullWidth
+          label="Full Name"
+          variant="outlined"
+          required
+          error={error && !accountName.trim()}
+          helperText={
+            error && !accountName.trim()
+              ? "Account name is required"
+              : undefined
+          }
+        />
+
+        {accountType === "FIXED" && (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Maturity Date"
+              value={maturityDate}
+              onChange={(newValue) => setMaturityDate(newValue)}
+              slotProps={{
+                textField: { fullWidth: true, margin: "normal" },
+              }}
+            />
+          </LocalizationProvider>
+        )}
+
+        <DialogActions sx={{ mt: 2 }}>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button type="submit" variant="contained">
+            Submit
+          </Button>
+        </DialogActions>
+      </form>
+
+      <Backdrop
+        open={loading}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <CircularProgress color="inherit" />
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            Transaction in progress… Please do not close this form.
+          </Typography>
+        </div>
+      </Backdrop>
+    </>
+  );
+}
+
+export default OpenAccountForm;

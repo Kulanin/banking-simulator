@@ -1,0 +1,29 @@
+import React from "react";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+
+export const TopNav: React.FC = () => {
+  return (
+    <AppBar position="fixed" color="primary">
+      <Toolbar>
+        <Box
+          sx={{
+            width: "70%",
+            margin: "0 auto",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+    
+          <Typography variant="h6">Bank Simulator</Typography>
+
+   
+          <Box>
+            {/* <Button color="inherit">Register</Button>
+            <Button color="inherit">Login</Button> */}
+          </Box>
+        </Box>
+      </Toolbar>
+    </AppBar>
+  );
+};
