@@ -5,14 +5,8 @@ export const TopNav: React.FC = () => {
   return (
     <AppBar position="fixed" color="primary">
       <Toolbar>
-        <Box
-          sx={{
-            width: "70%",
-            margin: "0 auto",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+        <div
+  className="w-full sm:w-[90%] md:w-[85%] lg:w-[80%] max-w-[1400px] mx-auto px-1 sm:px-2"
         >
     
           <Typography variant="h6">Bank Simulator</Typography>
@@ -22,7 +16,7 @@ export const TopNav: React.FC = () => {
             {/* <Button color="inherit">Register</Button>
             <Button color="inherit">Login</Button> */}
           </Box>
-        </Box>
+        </div>
       </Toolbar>
     </AppBar>
   );

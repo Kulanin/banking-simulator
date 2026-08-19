@@ -1,19 +1,11 @@
 import { memo, useCallback, useEffect, useState } from "react";
 import BankAccountList from "./accounts/BankAccountList";
-import Grid from "@mui/material/Grid";
-import {
-  Backdrop,
-  Card,
-  CardHeader,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
+import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import useFetch from "./customHooks/useFetch";
 import UsersDataGrid from "./users/UsersDataGrid";
 import { useNotification } from "./NotificationProvider";
 import type { AccountDetailsProps, UserProps } from "./types";
-
-
+import AppButton from "./AppButton";
 
 const BankSimulatorManagement = () => {
   const [users, setUsers] = useState<UserProps[]>([]);
@@ -25,7 +17,7 @@ const BankSimulatorManagement = () => {
     loading: loadingUsers,
     isError,
   } = useFetch();
-  const { customFetchData: FetchingAccounts } =
+  const { customFetchData: FetchingAccounts, loading: loadingAccounts } =
     useFetch();
 
   const fetchUsers = useCallback(async () => {
@@ -95,7 +87,7 @@ const BankSimulatorManagement = () => {
     );
   }
 
-  if (isError && users.length === 0) {
+  if (isError) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="w-full max-w-[600px] bg-red-600 text-white shadow-md p-4">
@@ -106,21 +98,22 @@ const BankSimulatorManagement = () => {
                 Something went wrong. Please try again.
               </p>
             </div>
-            <button
+            <AppButton
               onClick={() => fetchUsers()}
               className="ml-4 px-3 py-1 text-sm font-bold text-white border border-white rounded hover:bg-white hover:text-red-600 transition-colors"
             >
               Retry
-            </button>
+            </AppButton>
           </div>
         </div>
       </div>
     );
   }
 
+
   return (
-    <div style={{ margin: "auto", width: "70%" }}>
-      <Grid container spacing={8}>
+    <div className="w-full sm:w-[90%] md:w-[85%] lg:w-[80%] max-w-[1400px] mx-auto px-1 sm:px-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <UsersDataGrid
           updateUsers={updateUsers}
           fetchAccounts={fetchUserAccounts}
@@ -128,23 +121,31 @@ const BankSimulatorManagement = () => {
           setSelectedUser={setSelectedUser}
           users={users}
         />
-        <Grid size={{ xs: 12, md: 6 }} style={{ flex: 1 }}>
-          <Card>
-            <CardHeader
-              sx={{
-                backgroundColor: "#f5f5f5",
-                py: 1,
-              }}
-              titleTypographyProps={{ variant: "body2" }}
-              title={`${selectedUser?.name} accounts`}
+
+        <div className="flex flex-col flex-1">
+          <div className="bg-gray-100 py-2 px-4 rounded-md shadow-sm">
+            <h3 className="text-sm font-semibold text-gray-800">
+              {selectedUser?.name} accounts
+            </h3>
+          </div>
+
+          {loadingAccounts ? (
+            <div className="flex justify-center items-center py-6">
+              <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-2 text-sm text-gray-600">
+                Loading accounts...
+              </span>
+            </div>
+          ) : userAccounts.length === 0 ? (
+            <p className="text-center">There are no accounts for the user</p>
+          ) : (
+            <BankAccountList
+              accounts={userAccounts || []}
+              fetchUserAccounts={fetchUserAccounts}
             />
-          </Card>
-          <BankAccountList
-            accounts={userAccounts || []}
-            fetchUserAccounts={fetchUserAccounts}
-          />
-        </Grid>
-      </Grid>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

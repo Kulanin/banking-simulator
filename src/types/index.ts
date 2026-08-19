@@ -11,7 +11,7 @@ export interface AccountDetailsProps {
   balance: number;
   accountType: string;
   status: number;
-  maturityDate?: Date;
+  maturityDate?: string;
 }
 
 export type FetchUserAccountsFn = () => Promise<void> | void;

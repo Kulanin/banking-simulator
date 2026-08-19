@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
-  Button,
   FormControl,
   InputLabel,
   MenuItem,
@@ -11,11 +10,14 @@ import { useNotification } from "../NotificationProvider";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import useFetch from "../customHooks/useFetch";
 import type { AccountDetailsProps, FetchUserAccountsFn } from "../types";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import AppButton from "../AppButton";
 
 type MoneyTranferFormProps = {
   accounts: AccountDetailsProps[];
   fetchUserAccounts: FetchUserAccountsFn;
 };
+
 function MoneyTranferForm({
   accounts,
   fetchUserAccounts,
@@ -26,10 +28,18 @@ function MoneyTranferForm({
   const { showNotification } = useNotification();
   const [idempotencyKey, setIdepotencyKey] = useState("");
   const { customFetchData: transferFundsFetch, loading } = useFetch();
+    const [open, setOpen] = useState(false); 
   useEffect(() => {
     const key = crypto.randomUUID();
     setIdepotencyKey(key);
-  }, []);
+  }, [open]);
+
+  const resetState = ()=>{
+setFromAccount("")
+setToAccount("")
+setAmount("")
+  setOpen(false);
+  }
 
   const tranferFunds = async (value: any) => {
     try {
@@ -41,6 +51,7 @@ function MoneyTranferForm({
       );
       fetchUserAccounts();
       showNotification(data.message);
+      resetState()
     } catch (error: any) {
       showNotification(error.message, "error");
     }
@@ -54,11 +65,31 @@ function MoneyTranferForm({
       amount,
     });
   };
+  const handleClose = () => {
+ 
+    if (loading) return; 
+    setOpen(false);
+  };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <FormControl fullWidth margin="normal">
+      <AppButton variant="outline"  onClick={() => setOpen(true)}>TRANSFER</AppButton>
+      
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="sm" 
+        sx={{
+          "& .MuiDialog-container": { alignItems: "flex-start" },
+          "& .MuiDialog-paper": { marginTop: "20px" },
+        }}
+      >
+        <DialogTitle>TRANSFER Funds</DialogTitle>
+        
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+         <FormControl fullWidth margin="normal">
           <InputLabel>From Account</InputLabel>
           <Select
             value={fromAccount}
@@ -101,10 +132,23 @@ function MoneyTranferForm({
           type="number"
         />
 
-        <DialogActions sx={{ mt: 2 }}>
-          <Button>Cancel</Button>
-          <Button
-            loading={loading}
+
+          </DialogContent>
+
+          <DialogActions sx={{ padding: "16px 24px" }}>
+           
+            <AppButton 
+              type="button" 
+              onClick={handleClose} 
+              variant="secondary"
+              disabled={loading}
+            >
+              Cancel
+            </AppButton>
+
+            
+            <AppButton
+                 loading={loading}
             disabled={
               loading ||
               amount.trim() === "" ||
@@ -112,13 +156,14 @@ function MoneyTranferForm({
               targetAccountId === ""
             }
             type="submit"
-            variant="contained"
-            size="small"
-          >
-            TRANSFER
-          </Button>
-        </DialogActions>
-      </form>
+       
+     
+            >
+              TRANSFER
+            </AppButton>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       <Backdrop
         open={loading}
@@ -134,5 +179,4 @@ function MoneyTranferForm({
     </>
   );
 }
-
-export default MoneyTranferForm;
+export default memo(MoneyTranferForm);

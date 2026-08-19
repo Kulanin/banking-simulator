@@ -62,13 +62,6 @@ function useFetch(loadingState = false) {
 
       const results = await response.json();
 
-      if (results.code !== 0) {
-        if (results.message) {
-          setError(results.message);
-        }
-        return results;
-      }
-
       const extractedData = results.data?.result ?? results;
 
       if (p_b_AwaitResults) {

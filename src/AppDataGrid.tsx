@@ -8,6 +8,7 @@ type AppDataGridProps = {
 };
 
 const AppDataGrid = ({ columns, rows, onRowClick }: AppDataGridProps) => {
+  
   return (
     <DataGrid
       rows={rows}

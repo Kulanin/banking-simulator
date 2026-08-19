@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-
-import { Button, } from "@mui/material";
-
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import AppButton from "../AppButton";
 import {
   DialogActions,
   FormControl,
@@ -14,20 +13,24 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import  { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { useNotification } from "../NotificationProvider";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import useFetch from "../customHooks/useFetch";
 import type { FetchUserAccountsFn, UserProps } from "../types";
 type OpenAccountFormProps = {
   fetchAccounts: FetchUserAccountsFn;
-  selectedUser: UserProps;
+  selectedUser: UserProps | undefined;
 };
+
 function OpenAccountForm({
   fetchAccounts,
   selectedUser,
 }: OpenAccountFormProps) {
-  const [, setOpen] = React.useState(false);
+  if (!selectedUser) {
+    return;
+  }
+  const [open, setOpen] = React.useState(false);
   const [accountType, setAccountType] = React.useState("");
   const [maturityDate, setMaturityDate] = React.useState<Dayjs | null>(null);
   const [accountName, setAccountName] = useState("");
@@ -38,6 +41,13 @@ function OpenAccountForm({
   const { customFetchData, loading } = useFetch();
   const handleAccountNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAccountName(e.target.value);
+  };
+
+  const resetState = () => {
+    setAccountType("");
+    setMaturityDate(null);
+    setAccountName("");
+    setOpen(false);
   };
 
   const createAccount = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,65 +77,99 @@ function OpenAccountForm({
       );
       fetchAccounts();
       showNotification(data.message);
+      resetState();
     } catch (error: any) {
       showNotification(error.message, "error");
     }
   };
 
+  const invalidValue = accountName.trim() === "" || accountType.trim() === "";
   return (
     <>
-      <form onSubmit={createAccount}>
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Account Type</InputLabel>
-          <Select
-            value={accountType}
-            onChange={(e) => {
-              setAccountType(e.target.value);
-            }}
-            label="Account Type"
-          >
-            <MenuItem value="SAVINGS">Savings</MenuItem>
-            <MenuItem value="FIXED">Fixed</MenuItem>
-            <MenuItem value="CHECKING">Checking</MenuItem>
-          </Select>
-          <FormHelperText>Select account type</FormHelperText>
-        </FormControl>
+      <AppButton variant="success" size="sm" onClick={() => setOpen(true)}>
+        Create Account
+      </AppButton>
 
-        <TextField
-          value={accountName}
-          onChange={handleAccountNameChange}
-          fullWidth
-          label="Full Name"
-          variant="outlined"
-          required
-          error={error && !accountName.trim()}
-          helperText={
-            error && !accountName.trim()
-              ? "Account name is required"
-              : undefined
-          }
-        />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="sm"
+        sx={{
+          "& .MuiDialog-container": { alignItems: "flex-start" },
+          "& .MuiDialog-paper": { marginTop: "20px" },
+        }}
+      >
+        <DialogTitle>Create Account</DialogTitle>
 
-        {accountType === "FIXED" && (
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Maturity Date"
-              value={maturityDate}
-              onChange={(newValue) => setMaturityDate(newValue)}
-              slotProps={{
-                textField: { fullWidth: true, margin: "normal" },
-              }}
+        <form onSubmit={createAccount}>
+          <DialogContent>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Account Type</InputLabel>
+              <Select
+                value={accountType}
+                onChange={(e) => {
+                  setAccountType(e.target.value);
+                }}
+                label="Account Type"
+              >
+                <MenuItem value="SAVINGS">Savings</MenuItem>
+                <MenuItem value="FIXED">Fixed</MenuItem>
+                <MenuItem value="CHECKING">Checking</MenuItem>
+              </Select>
+
+              <FormHelperText>Select account type</FormHelperText>
+            </FormControl>
+
+            <TextField
+              value={accountName}
+              onChange={handleAccountNameChange}
+              fullWidth
+              label="Full Name"
+              variant="outlined"
+              required
+              error={error && !accountName.trim()}
+              helperText={
+                error && !accountName.trim()
+                  ? "Account name is required"
+                  : undefined
+              }
             />
-          </LocalizationProvider>
-        )}
 
-        <DialogActions sx={{ mt: 2 }}>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" variant="contained">
-            Submit
-          </Button>
-        </DialogActions>
-      </form>
+            {accountType === "FIXED" && (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Maturity Date"
+                  value={maturityDate}
+                  onChange={(newValue) => setMaturityDate(newValue)}
+                  slotProps={{
+                    textField: { fullWidth: true, margin: "normal" },
+                  }}
+                />
+              </LocalizationProvider>
+            )}
+          </DialogContent>
+
+          <DialogActions sx={{ padding: "16px 24px" }}>
+            <AppButton
+              type="button"
+              onClick={handleClose}
+              variant="secondary"
+              disabled={loading}
+            >
+              Cancel
+            </AppButton>
+
+            <AppButton
+              loading={loading}
+              disabled={loading || invalidValue}
+              type="submit"
+            >
+              Submit
+            </AppButton>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       <Backdrop
         open={loading}
@@ -141,5 +185,4 @@ function OpenAccountForm({
     </>
   );
 }
-
 export default OpenAccountForm;

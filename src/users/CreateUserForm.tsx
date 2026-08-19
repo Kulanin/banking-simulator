@@ -1,20 +1,29 @@
-import { useState } from "react";
-
-import { Button } from "@mui/material";
+import { memo, useState } from "react";
 import { useNotification } from "../NotificationProvider";
 import { DialogActions, TextField } from "@mui/material";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import useFetch from "../customHooks/useFetch";
 import type { UpdateUsersFn } from "../types";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import AppButton from "../AppButton";
 type CreateUserFormProps = {
   updateUsers: UpdateUsersFn;
 };
+
 function CreateUserForm({ updateUsers }: CreateUserFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const { showNotification } = useNotification();
   const [error, setError] = useState(false);
+  const [open, setOpen] = useState(false);
   const { customFetchData: createUserFetch, loading } = useFetch();
+
+  const resetState = () => {
+    setName("");
+    setEmail("");
+    setOpen(false);
+    setError(false);
+  };
 
   const createUser = async (e: any) => {
     e.preventDefault();
@@ -31,49 +40,83 @@ function CreateUserForm({ updateUsers }: CreateUserFormProps) {
       );
       showNotification(data.message);
       updateUsers(data.data);
+      resetState();
     } catch (error: any) {
       showNotification(error.message, "error");
     }
   };
 
+  const handleClose = () => {
+    if (loading) return;
+    setOpen(false);
+    setError(false);
+  };
+
   return (
     <>
-      <form onSubmit={createUser}>
-        <TextField
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          label="Full Name"
-          variant="outlined"
-          required
-          fullWidth
-          margin="normal"
-          error={error && !name.trim()}
-          helperText={
-            error && !name.trim() ? "User name is required" : undefined
-          }
-        />
+      <AppButton variant="success" onClick={() => setOpen(true)}>
+        CREATE USER
+      </AppButton>
 
-        <TextField
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          label="Email"
-          variant="outlined"
-          required
-          fullWidth
-          margin="normal"
-          error={error && !email.trim()}
-          helperText={
-            error && !email.trim() ? "User email is required" : undefined
-          }
-        />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="sm"
+        sx={{
+          "& .MuiDialog-container": { alignItems: "flex-start" },
+          "& .MuiDialog-paper": { marginTop: "20px" },
+        }}
+      >
+        <DialogTitle>Create User</DialogTitle>
 
-        <DialogActions sx={{ mt: 2 }}>
-          <Button>Cancel</Button>
-          <Button type="submit" variant="contained">
-            Submit
-          </Button>
-        </DialogActions>
-      </form>
+        <form onSubmit={createUser}>
+          <DialogContent>
+            <TextField
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              label="Full Name"
+              variant="outlined"
+              required
+              fullWidth
+              margin="normal"
+              error={error && !name.trim()}
+              helperText={
+                error && !name.trim() ? "User name is required" : undefined
+              }
+            />
+
+            <TextField
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              label="Email"
+              variant="outlined"
+              required
+              fullWidth
+              margin="normal"
+              error={error && !email.trim()}
+              helperText={
+                error && !email.trim() ? "User email is required" : undefined
+              }
+            />
+          </DialogContent>
+
+          <DialogActions sx={{ padding: "16px 24px" }}>
+            <AppButton
+              type="button"
+              onClick={handleClose}
+              variant="secondary"
+              disabled={loading}
+            >
+              Cancel
+            </AppButton>
+
+            <AppButton loading={loading} type="submit">
+              Submit
+            </AppButton>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       <Backdrop
         open={loading}
@@ -89,5 +132,4 @@ function CreateUserForm({ updateUsers }: CreateUserFormProps) {
     </>
   );
 }
-
-export default CreateUserForm;
+export default memo(CreateUserForm);

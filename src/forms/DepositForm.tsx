@@ -1,26 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { DialogActions, TextField } from "@mui/material";
 import { useNotification } from "../NotificationProvider";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import useFetch from "../customHooks/useFetch";
 import type { FetchUserAccountsFn } from "../types";
-
+import AppButton from "../AppButton";
 
 type WithdrawFormProps = {
-  accountId: string;
+  accountId: number;
   fetchUserAccounts: FetchUserAccountsFn;
 };
+
 function DepositForm({ accountId, fetchUserAccounts }: WithdrawFormProps) {
   const [amount, setAmount] = useState("");
   const { showNotification } = useNotification();
   const [idempotencyKey, setIdepotencyKey] = useState("");
   const [error, setError] = useState(false);
   const { customFetchData, loading } = useFetch();
+  const [open, setOpen] = useState(false); 
+
+  const handleClose = () => {
+ 
+    if (loading) return; 
+    setOpen(false);
+    setAmount("");
+    setError(false);
+  };
+
   useEffect(() => {
     const key = crypto.randomUUID();
     setIdepotencyKey(key);
-  }, []);
+  }, [open]);
 
   const deposit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,6 +51,8 @@ function DepositForm({ accountId, fetchUserAccounts }: WithdrawFormProps) {
       );
       fetchUserAccounts();
       showNotification(data.message);
+      setOpen(false);
+      setAmount("");
     } catch (error: any) {
       showNotification(error.message, "error");
     }
@@ -47,33 +60,58 @@ function DepositForm({ accountId, fetchUserAccounts }: WithdrawFormProps) {
 
   return (
     <>
-      <form onSubmit={deposit}>
-        <TextField
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          label="Amount"
-          variant="outlined"
-          required
-          fullWidth
-          margin="normal"
-          error={error}
-          type="number"
-          helperText={error ? "Amount is required" : undefined}
-        />
+      <AppButton onClick={() => setOpen(true)}>Deposit</AppButton>
+      
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="sm" 
+        sx={{
+          "& .MuiDialog-container": { alignItems: "flex-start" },
+          "& .MuiDialog-paper": { marginTop: "20px" },
+        }}
+      >
+        <DialogTitle>Deposit Funds</DialogTitle>
+        
+        <form onSubmit={deposit}>
+          <DialogContent>
+            <TextField
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              label="Amount"
+              variant="outlined"
+              required
+              fullWidth
+              margin="normal"
+              error={error}
+              type="number"
+              helperText={error ? "Amount is required" : undefined}
+              disabled={loading} 
+            />
+          </DialogContent>
 
-        <DialogActions sx={{ mt: 2 }}>
-          <Button>Cancel</Button>
-          <Button
-            loading={loading}
-            disabled={loading || amount.trim() === ""}
-            type="submit"
-            variant="contained"
-            size="small"
-          >
-            Deposit
-          </Button>
-        </DialogActions>
-      </form>
+          <DialogActions sx={{ padding: "16px 24px" }}>
+           
+            <AppButton 
+              type="button" 
+              onClick={handleClose} 
+              variant="secondary"
+              disabled={loading}
+            >
+              Cancel
+            </AppButton>
+            
+            <AppButton
+              disabled={loading || amount.trim() === ""}
+              loading={loading}
+              type="submit"
+            >
+              Deposit
+            </AppButton>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       <Backdrop
         open={loading}

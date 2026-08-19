@@ -1,11 +1,8 @@
-import React, { memo,  } from "react";
-import GenericFormModal from "../forms/GenericFormModal";
+import React, { memo } from "react";
 import OpenAccountForm from "../forms/OpenAccountForm";
 import CreateUserForm from "./CreateUserForm";
 import AppDataGrid from "../AppDataGrid";
 import type { GridColDef } from "@mui/x-data-grid";
-import Grid from "@mui/material/Grid";
-import { Card, CardHeader } from "@mui/material";
 import type { FetchUserAccountsFn, UpdateUsersFn, UserProps } from "../types";
 
 type UsersDataGridProps = {
@@ -13,7 +10,7 @@ type UsersDataGridProps = {
   setSelectedUser: React.Dispatch<React.SetStateAction<UserProps | undefined>>;
   selectedUser: UserProps | undefined;
   fetchAccounts: FetchUserAccountsFn;
-  updateUsers:UpdateUsersFn
+  updateUsers: UpdateUsersFn;
 };
 
 const UsersDataGrid = ({
@@ -21,63 +18,45 @@ const UsersDataGrid = ({
   setSelectedUser,
   selectedUser,
   fetchAccounts,
-  updateUsers
+  updateUsers,
 }: UsersDataGridProps) => {
+
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 50 },
     { field: "name", headerName: "Name", width: 100 },
-    { field: "email", headerName: "Email", width: 200 },
+    { field: "email", headerName: "Email", width: 180 },
     {
       field: "actions",
       headerName: "Actions",
       width: 200,
       renderCell: () => (
-        <GenericFormModal
-          openFormText="Create Account"
-          dialogTitle="Select account type"
-          dialogContent={OpenAccountForm}
-          dialogProps={{
-            selectedUser,
-            fetchAccounts,
-          }}
+        <OpenAccountForm
+          selectedUser={selectedUser}
+          fetchAccounts={fetchAccounts}
         />
       ),
     },
   ];
 
   return (
-      <Grid size={{ xs: 12, md: 6 }}>
-      <Card>
-        <CardHeader
-          sx={{
-            backgroundColor: "#f5f5f5",
-            py: 1,
-          }}
-          title="Users"
-          titleTypographyProps={{ variant: "body2" }}
-          action={
-            <GenericFormModal
-              dialogContent={CreateUserForm}
-              dialogProps={{
-                updateUsers,
-              }}
-              openFormText="Create User"
-              dialogTitle="Create User"
-            />
-          }
-        />
-      </Card>
+    <div>
+      <div className="flex h-12 justify-between items-center bg-gray-200 p-4 text-white">
+        <h2 className="text-xl font-bold text-gray-900">Users</h2>
+        <CreateUserForm updateUsers={updateUsers} />
+      </div>
 
-      <AppDataGrid
-        columns={columns}
-        rows={users.map((user: any) => ({
-          createAccount: "createAccount",
-          ...user,
-        }))}
-        onRowClick={(user: any) => setSelectedUser(user.row)}
-      />
-    </Grid>
+      <div className="sm:w-full">
+        <AppDataGrid
+          columns={columns}
+          rows={users.map((user: any) => ({
+            createAccount: "createAccount",
+            ...user,
+          }))}
+          onRowClick={(user: any) => setSelectedUser(user.row)}
+        />
+      </div>
+    </div>
   );
 };
 

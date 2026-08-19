@@ -1,18 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { GridColDef } from "@mui/x-data-grid";
 import {} from "@mui/material";
 import AppDataGrid from "../AppDataGrid";
 import useFetch from "../customHooks/useFetch";
 import { useNotification } from "../NotificationProvider";
+import { Dialog, DialogContent } from "@mui/material";
+
+import AppButton from "../AppButton";
+
 
 type MoneyTranferFormProps = {
-  accountId: string;
+  accountId: number;
 };
+
 function BankStatementTable({ accountId }: MoneyTranferFormProps) {
   const [statement, setStatement] = useState<any>([]);
   const { showNotification } = useNotification();
 
-  const { customFetchData } = useFetch();
+  const { customFetchData,loading} = useFetch();
 
   const fetchStatement = useCallback(async () => {
     try {
@@ -35,11 +40,13 @@ function BankStatementTable({ accountId }: MoneyTranferFormProps) {
     }
   }, []);
 
-  useEffect(() => {
-    fetchStatement(); 
-  }, []);
 
-  const statementColumns: GridColDef[] = [
+
+
+ 
+  const [open, setOpen] = useState(false); 
+
+    const statementColumns: GridColDef[] = [
     {
       field: "accountName",
       headerName: "Account Name",
@@ -67,14 +74,40 @@ function BankStatementTable({ accountId }: MoneyTranferFormProps) {
     },
   ];
 
+  const handleClose = () => {
+ 
+    if (loading) return; 
+    setOpen(false);
+  };
+
   return (
     <>
+      <AppButton variant="secondary" onClick={() => {setOpen(true);fetchStatement()}}>View Statement</AppButton>
+      
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="sm" 
+        sx={{
+          "& .MuiDialog-container": { alignItems: "flex-start" },
+          "& .MuiDialog-paper": { marginTop: "20px" },
+        }}
+      >
+  
+     
+          <DialogContent>
       <AppDataGrid
         columns={statementColumns}
         rows={statement.map((item: any) => ({
           ...item,
         }))}
       />
+          </DialogContent>
+
+        
+      </Dialog>
+
     </>
   );
 }
