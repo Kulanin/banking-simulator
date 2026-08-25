@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { DialogActions, TextField } from "@mui/material";
-import { useNotification } from "../NotificationProvider";
+import { useNotification } from "../../context/NotificationProvider";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
-import useFetch from "../customHooks/useFetch";
-import type { FetchUserAccountsFn } from "../types";
-import AppButton from "../AppButton";
+import useFetch from "../../customHooks/useFetch";
+import type { FetchUserAccountsFn } from "../../types";
+import AppButton from "../ui/AppButton";
 
-type WithdrawFormProps = {
+type DepositFormProps = {
   accountId: number;
   fetchUserAccounts: FetchUserAccountsFn;
 };
 
-function DepositForm({ accountId, fetchUserAccounts }: WithdrawFormProps) {
+function DepositForm({ accountId, fetchUserAccounts }: DepositFormProps) {
   const [amount, setAmount] = useState("");
   const { showNotification } = useNotification();
   const [idempotencyKey, setIdepotencyKey] = useState("");

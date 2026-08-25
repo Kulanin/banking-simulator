@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-import AppButton from "../AppButton";
+import AppButton from "../ui/AppButton";
 import {
   DialogActions,
   FormControl,
@@ -14,10 +14,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Dayjs } from "dayjs";
-import { useNotification } from "../NotificationProvider";
+import { useNotification } from "../../context/NotificationProvider";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
-import useFetch from "../customHooks/useFetch";
-import type { FetchUserAccountsFn, UserProps } from "../types";
+import useFetch from "../../customHooks/useFetch";
+import type { FetchUserAccountsFn, UserProps } from "../../types";
 type OpenAccountFormProps = {
   fetchAccounts: FetchUserAccountsFn;
   selectedUser: UserProps | undefined;

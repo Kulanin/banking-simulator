@@ -3,7 +3,7 @@ import MoneyTranferForm from "../forms/MoneyTranferForm";
 import BankStatementTable from "./BankStatementTable";
 import WithdrawForm from "../forms/WithdrawForm";
 import DepositForm from "../forms/DepositForm";
-import type { AccountDetailsProps, FetchUserAccountsFn } from "../types";
+import type { AccountDetailsProps, FetchUserAccountsFn } from "../../types";
 
 type AccountCardProps = {
   account: AccountDetailsProps;

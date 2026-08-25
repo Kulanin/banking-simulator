@@ -6,12 +6,12 @@ import {
   Select,
 } from "@mui/material";
 import { DialogActions, TextField } from "@mui/material";
-import { useNotification } from "../NotificationProvider";
+import { useNotification } from "../../context/NotificationProvider";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
-import useFetch from "../customHooks/useFetch";
-import type { AccountDetailsProps, FetchUserAccountsFn } from "../types";
+import useFetch from "../../customHooks/useFetch";
+import type { AccountDetailsProps, FetchUserAccountsFn } from "../../types";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-import AppButton from "../AppButton";
+import AppButton from "../ui/AppButton";
 
 type MoneyTranferFormProps = {
   accounts: AccountDetailsProps[];

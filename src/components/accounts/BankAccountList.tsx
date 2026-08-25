@@ -1,6 +1,6 @@
 import { memo } from "react";
 import AccountCard from "./AccountCard";
-import type { AccountDetailsProps, FetchUserAccountsFn } from "../types";
+import type { AccountDetailsProps, FetchUserAccountsFn } from "../../types";
 
 
 type BankAccountListProps = {

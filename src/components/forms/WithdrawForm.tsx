@@ -1,11 +1,11 @@
 import React, { useEffect, useState, memo } from "react";
 import { DialogActions, TextField } from "@mui/material";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
-import { useNotification } from "../NotificationProvider";
-import useFetch from "../customHooks/useFetch";
-import type { AccountDetailsProps, FetchUserAccountsFn } from "../types";;
+import { useNotification } from "../../context/NotificationProvider";
+import useFetch from "../../customHooks/useFetch";
+import type { AccountDetailsProps, FetchUserAccountsFn } from "../../types";;
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-import AppButton from "../AppButton";
+import AppButton from "../ui/AppButton";
 
 type WithdrawFormProps = {
   accounts: AccountDetailsProps[];

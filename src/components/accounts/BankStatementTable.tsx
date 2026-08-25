@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
 import type { GridColDef } from "@mui/x-data-grid";
 import {} from "@mui/material";
-import AppDataGrid from "../AppDataGrid";
-import useFetch from "../customHooks/useFetch";
-import { useNotification } from "../NotificationProvider";
+import AppDataGrid from "../ui/AppDataGrid";
+import useFetch from "../../customHooks/useFetch";
+import { useNotification } from "../../context/NotificationProvider";
 import { Dialog, DialogContent } from "@mui/material";
 
-import AppButton from "../AppButton";
+import AppButton from "../ui/AppButton";
 
 
 type MoneyTranferFormProps = {

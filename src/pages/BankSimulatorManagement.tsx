@@ -1,11 +1,11 @@
 import { memo, useCallback, useEffect, useState } from "react";
-import BankAccountList from "./accounts/BankAccountList";
+import BankAccountList from "../components/accounts/BankAccountList";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
-import useFetch from "./customHooks/useFetch";
-import UsersDataGrid from "./users/UsersDataGrid";
-import { useNotification } from "./NotificationProvider";
-import type { AccountDetailsProps, UserProps } from "./types";
-import AppButton from "./AppButton";
+import useFetch from "../customHooks/useFetch";
+import UsersDataGrid from "../components/users/UsersDataGrid";
+import { useNotification } from "../context/NotificationProvider";
+import type { AccountDetailsProps, UserProps } from "../types";
+import AppButton from "../components/ui/AppButton";
 
 const BankSimulatorManagement = () => {
   const [users, setUsers] = useState<UserProps[]>([]);

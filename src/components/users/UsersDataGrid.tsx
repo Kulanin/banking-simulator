@@ -1,9 +1,9 @@
 import React, { memo } from "react";
 import OpenAccountForm from "../forms/OpenAccountForm";
 import CreateUserForm from "./CreateUserForm";
-import AppDataGrid from "../AppDataGrid";
+import AppDataGrid from "../ui/AppDataGrid";
 import type { GridColDef } from "@mui/x-data-grid";
-import type { FetchUserAccountsFn, UpdateUsersFn, UserProps } from "../types";
+import type { FetchUserAccountsFn, UpdateUsersFn, UserProps } from "../../types";
 
 type UsersDataGridProps = {
   users: UserProps[];
