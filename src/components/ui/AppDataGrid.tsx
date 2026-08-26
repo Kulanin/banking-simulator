@@ -5,12 +5,14 @@ type AppDataGridProps = {
   columns: GridColDef[];
   rows: GridValidRowModel[];
   onRowClick?: (params: GridRowParams) => void;
+  loading?:boolean
 };
 
-const AppDataGrid = ({ columns, rows, onRowClick }: AppDataGridProps) => {
+const AppDataGrid = ({ columns, rows, onRowClick,loading = false}: AppDataGridProps) => {
   
   return (
     <DataGrid
+      loading={loading}
       rows={rows}
       columns={columns}
       onRowClick={onRowClick}

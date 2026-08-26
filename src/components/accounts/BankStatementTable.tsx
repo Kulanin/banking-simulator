@@ -102,6 +102,7 @@ function BankStatementTable({ accountId }: MoneyTranferFormProps) {
         rows={statement.map((item: any) => ({
           ...item,
         }))}
+        loading={loading}
       />
           </DialogContent>
 
