@@ -6,6 +6,8 @@ import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import useFetch from "../../customHooks/useFetch";
 import type { FetchUserAccountsFn } from "../../types";
 import AppButton from "../ui/AppButton";
+import { SuccessCard } from "../SuccessCard";
+import { Modal } from "../Modal";
 
 type DepositFormProps = {
   accountId: number;
@@ -18,14 +20,22 @@ function DepositForm({ accountId, fetchUserAccounts }: DepositFormProps) {
   const [idempotencyKey, setIdepotencyKey] = useState("");
   const [error, setError] = useState(false);
   const { customFetchData, loading } = useFetch();
-  const [open, setOpen] = useState(false); 
+  const [open, setOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [depositResponse, setDepositResponse] = useState<{
+    accountId: string;
+    balanceAfter: number;
+    transactionId: string;
+    amount: number;
+  } | null>(null);
 
   const handleClose = () => {
- 
-    if (loading) return; 
+    if (loading) return;
     setOpen(false);
     setAmount("");
     setError(false);
+    setSuccessOpen(false);
+    fetchUserAccounts();
   };
 
   useEffect(() => {
@@ -34,13 +44,14 @@ function DepositForm({ accountId, fetchUserAccounts }: DepositFormProps) {
   }, [open]);
 
   const deposit = async (e: React.FormEvent<HTMLFormElement>) => {
+  
     e.preventDefault();
     if (!amount.trim()) {
       setError(true);
       return;
     }
     try {
-      const data = await customFetchData(
+      const response = await customFetchData(
         `/api/v1/accounts/${accountId}/deposit`,
         {
           method: "POST",
@@ -49,8 +60,8 @@ function DepositForm({ accountId, fetchUserAccounts }: DepositFormProps) {
         },
         true,
       );
-      fetchUserAccounts();
-      showNotification(data.message);
+        setSuccessOpen(true);
+      setDepositResponse(response.data);
       setOpen(false);
       setAmount("");
     } catch (error: any) {
@@ -61,19 +72,38 @@ function DepositForm({ accountId, fetchUserAccounts }: DepositFormProps) {
   return (
     <>
       <AppButton onClick={() => setOpen(true)}>Deposit</AppButton>
-      
+      <Modal open={successOpen} onClose={() => {}} maxWidth="sm">
+        <SuccessCard
+          variant="success"
+          title="Deposit Successful!"
+          message={`R ${depositResponse?.amount} has been deposited to your account.`}
+          details={[
+            {
+              label: "Account Number",
+              value: "0000" + depositResponse?.accountId || "N/A",
+            },
+            {
+              label: "New Balance",
+              value: `R ${depositResponse?.balanceAfter}`,
+            },
+          //  { label: "Reference", value: "TX-2026-09-03-001" },
+          // { label: "Date", value: "2026-09-03 14:30" }, 
+          ]}
+          onClose={handleClose}
+        />
+      </Modal>
       <Dialog
         open={open}
         onClose={handleClose}
         fullWidth
-        maxWidth="sm" 
+        maxWidth="sm"
         sx={{
           "& .MuiDialog-container": { alignItems: "flex-start" },
           "& .MuiDialog-paper": { marginTop: "20px" },
         }}
       >
         <DialogTitle>Deposit Funds</DialogTitle>
-        
+
         <form onSubmit={deposit}>
           <DialogContent>
             <TextField
@@ -87,21 +117,20 @@ function DepositForm({ accountId, fetchUserAccounts }: DepositFormProps) {
               error={error}
               type="number"
               helperText={error ? "Amount is required" : undefined}
-              disabled={loading} 
+              disabled={loading}
             />
           </DialogContent>
 
           <DialogActions sx={{ padding: "16px 24px" }}>
-           
-            <AppButton 
-              type="button" 
-              onClick={handleClose} 
+            <AppButton
+              type="button"
+              onClick={handleClose}
               variant="secondary"
               disabled={loading}
             >
               Cancel
             </AppButton>
-            
+
             <AppButton
               disabled={loading || amount.trim() === ""}
               loading={loading}
