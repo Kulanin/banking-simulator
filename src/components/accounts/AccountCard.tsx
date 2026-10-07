@@ -22,7 +22,7 @@ const AccountCard = ({
         {account.accountType} - {account.accountNumber}{" "}
         {account.accountName && `(${account.accountName})`}
       </p>
-      <p className="text-sm text-gray-700">Balance:{Intl.NumberFormat("en-za",{
+      <p className="text-sm text-gray-700">Balance: {Intl.NumberFormat("en-za",{
         style:"currency",
         currency:"ZAR"
       }).format(account.balance)}</p>

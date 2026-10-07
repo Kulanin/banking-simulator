@@ -52,7 +52,7 @@ function DepositForm({ accountId, fetchUserAccounts }: DepositFormProps) {
     }).format(amount);
     setDepositStatus({
       message: `${formatted} has been deposited successfully.`,
-      title: "Withdrawal Successful!",
+      title: "Deposit Successful!",
       variant: "success",
     });
   }
