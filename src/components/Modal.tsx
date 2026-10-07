@@ -24,9 +24,7 @@ export function Modal({
   onClose,
   children,
   maxWidth = "md",
-  showCloseButton = true,
-  closeButtonLabel = "Close",
-  onCloseButtonClick,
+
 }: ModalProps) {
   // Close on Escape key
   useEffect(() => {
