@@ -22,7 +22,10 @@ const AccountCard = ({
         {account.accountType} - {account.accountNumber}{" "}
         {account.accountName && `(${account.accountName})`}
       </p>
-      <p className="text-sm text-gray-700">Balance: R {account.balance}</p>
+      <p className="text-sm text-gray-700">Balance:{Intl.NumberFormat("en-za",{
+        style:"currency",
+        currency:"ZAR"
+      }).format(account.balance)}</p>
 
       {account.maturityDate && (
         <p className="text-sm text-gray-600">
